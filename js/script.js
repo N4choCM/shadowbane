@@ -43,19 +43,66 @@ const drawMap = () => {
     }
 }
 
-const protagonist = {
-    x: 1,
-    y: 1,
-    color: protagonistColor,
-    draw: function(){
+let player = function(){
+    this.x = 1;
+    this.y = 1;
+    this.color = "#820c01";
+    this.draw = () => {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x*width, this.y*height, width, height);
     }
+    this.controlMargins = (x, y) => {
+        let colission = false;
+        if(map[y][x] == 0){
+            colission = true;
+        }
+        return colission;
+    }
+    this.goUp = () => { 
+        if(!this.controlMargins(this.x, this.y-1)){
+            this.y--;
+        }
+    }
+    this.goDown = () => {    
+        if(!this.controlMargins(this.x, this.y+1)){
+            this.y++;
+        } 
+    }
+    this.goLeft = () => {
+        if(!this.controlMargins(this.x-1, this.y)){
+            this.x--;
+        }
+    }
+    this.goRight = () => {
+        if(!this.controlMargins(this.x+1, this.y)){
+            this.x++;
+        }
+    }
 }
+
+let protagonist;
 
 const init = () => {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+
+    protagonist = new player();
+
+    document.addEventListener('keydown', (key) => {
+        if(key.keyCode == 38){
+            protagonist.goUp();
+        }
+        if(key.keyCode == 40){
+            protagonist.goDown();
+        }
+        if(key.keyCode == 37){
+            protagonist.goLeft();
+        }
+        if(key.keyCode == 39){
+            protagonist.goRight();
+        }
+    });
+
     setInterval(() => {
         main();
     }, 1000/FPS);
@@ -69,6 +116,7 @@ const eraseCanvas = () => {
 const main = () => {    
     eraseCanvas();
     drawMap();
+    protagonist.draw();
 }
 
 // Prueba

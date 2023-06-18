@@ -9,22 +9,22 @@ let earth = '#c6892f';
 let key = '#c6bc00';
 let protagonistColor = '#820c01';
 let map = [
-    [0,0,0,0,0,0,0,0,0,0],
-    [0,2,2,0,0,0,2,2,0,0],
-    [0,0,2,2,2,2,2,0,0,0],
-    [0,0,2,0,0,0,2,2,0,0],
-    [0,0,2,2,2,0,0,2,0,0],
-    [0,2,2,0,0,0,0,2,0,0],
-    [0,0,2,0,0,0,2,2,2,0],
-    [0,2,2,2,0,0,2,0,0,0],
-    [0,2,2,2,0,0,2,0,0,0],
-    [0,0,0,0,0,0,0,0,0,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
+    [0,2,2,0,0,0,2,2,2,2,0,0,2,2,0],
+    [0,0,2,2,2,2,2,0,0,2,0,0,2,0,0],
+    [0,0,2,0,0,0,2,2,0,2,2,2,2,0,0],
+    [0,0,2,2,2,0,0,2,0,0,0,2,0,0,0],
+    [0,2,2,0,0,0,0,2,0,0,0,2,0,0,0],
+    [0,0,2,0,0,0,2,2,2,0,0,2,2,2,0],
+    [0,2,2,2,0,0,2,0,0,0,1,0,0,2,0],
+    [0,2,2,3,0,0,2,0,0,2,2,2,2,2,0],
+    [0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]
 ];
 
 const drawMap = () => {
     let color;
     for(let y = 0; y < 10; y++){
-        for(let x = 0; x < 10; x++){
+        for(let x = 0; x < 15; x++){
             if(map[y][x] == 0){
                 color = wall;
             }
@@ -43,32 +43,109 @@ const drawMap = () => {
     }
 }
 
-const protagonist = {
-    x: 1,
-    y: 1,
-    color: protagonistColor,
-    draw: function(){
+let player = function(){
+    this.x = 1;
+    this.y = 1;
+    this.color = "#820c01";
+    this.key = false;
+    this.draw = () => {
         ctx.fillStyle = this.color;
         ctx.fillRect(this.x*width, this.y*height, width, height);
     }
+    this.controlMargins = (x, y) => {
+        let colission = false;
+        if(map[y][x] == 0){
+            colission = true;
+        }
+        return colission;
+    }
+    this.goUp = () => { 
+        if(!this.controlMargins(this.x, this.y-1)){
+            this.y--;
+            this.checkKeyAndDoor();
+        }
+    }
+    this.goDown = () => {    
+        if(!this.controlMargins(this.x, this.y+1)){
+            this.y++;
+            this.checkKeyAndDoor();
+        } 
+    }
+    this.goLeft = () => {
+        if(!this.controlMargins(this.x-1, this.y)){
+            this.x--;
+            this.checkKeyAndDoor();
+        }
+    }
+    this.goRight = () => {
+        if(!this.controlMargins(this.x+1, this.y)){
+            this.x++;
+            this.checkKeyAndDoor();
+        }
+    }
+    this.win = () => {
+        console.log("You won!");
+        this.x = 1;
+        this.y = 1;
+        this.key = false;
+        map[8][3] = 3;
+    }
+    this.checkKeyAndDoor = () => {
+        let field = map[this.y][this.x];
+        
+        if(field == 3){
+            this.key = true;
+            map[this.y][this.x] = 2;
+            console.log("You found the key!")
+        }
+
+        if(field == 1){
+            if(this.key){
+                this.win();
+            }else{
+                console.log("You need the key to open the door!");
+            }
+        }
+    }
 }
+
+let protagonist;
 
 const init = () => {
     canvas = document.getElementById('canvas');
     ctx = canvas.getContext('2d');
+
+    protagonist = new player();
+
+    document.addEventListener('keydown', (key) => {
+        if(key.keyCode == 38){
+            protagonist.goUp();
+        }
+        if(key.keyCode == 40){
+            protagonist.goDown();
+        }
+        if(key.keyCode == 37){
+            protagonist.goLeft();
+        }
+        if(key.keyCode == 39){
+            protagonist.goRight();
+        }
+    });
+
     setInterval(() => {
         main();
     }, 1000/FPS);
 }
 
 const eraseCanvas = () => {
-    canvas.width = 500;
+    canvas.width = 750;
     canvas.height = 500;
 }
 
 const main = () => {    
     eraseCanvas();
     drawMap();
+    protagonist.draw();
 }
 
 // Prueba

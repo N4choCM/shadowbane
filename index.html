@@ -4,12 +4,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="./js/script.js"></script>
     <title>Shadowbane</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #canvas {
+            border: 2px solid #000000;
+            width: 80vw;
+            height: 80vh;
+        }
+    </style>
 </head>
 
 <body onload="init();">
-    <canvas id="canvas" width="750" height="500" style="border: 2px solid #000000"></canvas>
+    <div style="background-color: #00a0a0; border-radius: 0.375rem; margin-bottom: 0.5rem">
+        <h1 style="text-align: center; color: white; margin: 1rem;">Countdown: <span id="countdown">30s</span></h1>
+    </div>
+    <div id="canvas-container">
+        <canvas id="canvas"></canvas>
+    </div>
 </body>
 
 </html>

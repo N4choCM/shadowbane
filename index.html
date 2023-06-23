@@ -34,9 +34,10 @@
     </style>
 </head>
 
-<body onload="init();">
+<body onload="init();" class="bg-dark">
+    <audio id="countdownAudio" src="./assets/shadowbane.soundtrack.mp3" loop></audio>
     <div style="background-color: #00a0a0; border-radius: 0.375rem; margin-bottom: 0.5rem">
-        <h1 style="text-align: center; color: white; margin: 1rem;">Countdown: <span id="countdown">30s</span></h1>
+        <h1 class="text-dark" style="text-align: center; margin-left: 1rem; margin-right: 1rem;">Countdown: <span id="countdown">30s</span></h1>
     </div>
     <div id="canvas-container">
         <canvas id="canvas"></canvas>

@@ -109,7 +109,7 @@ const drawMap = () => {
 let light = function (x, y) {
 	this.x = x;
 	this.y = y;
-	this.delay = 50;
+	this.delay = 10;
 	this.index = 0;
 	this.frame = 0;
 	this.changeFrame = () => {

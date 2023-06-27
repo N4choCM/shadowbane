@@ -16,9 +16,9 @@ let mainInterval;
 let canvas;
 // This variable represents the context of the canvas.
 let ctx;
-/* 
+/*
  * This variable represents the number of frames per second of the game. It is crucial
- * to calculate the interval when the main() function is called.  
+ * to calculate the interval when the main() function is called.
  */
 const FPS = 50;
 // This variable represents the width of each tile in the map.
@@ -33,6 +33,8 @@ let enemies = [];
 let lights = [];
 // This variable represents the image that contains all the tiles of the game.
 let tileMap;
+// This variable forbids the toast to be shown more than once.
+let canToastBeShown = true;
 // This array represents the map of the game. Each number corresponds to a different tile.
 let map = [
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -141,12 +143,12 @@ let light = function (x, y) {
 
 /**
  * This object represents an enemy in the game. It has the following params:
- * @param {*} x The current x coordinate of the enemy. 
+ * @param {*} x The current x coordinate of the enemy.
  * @param {*} y The current y coordinate of the enemy.
  * It also has the following properties:
  * @property {x} The current x coordinate of the enemy.
  * @property {y} The current y coordinate of the enemy.
- * @property {direction} The direction the enemy is moving in. 0 = up, 1 = down, 
+ * @property {direction} The direction the enemy is moving in. 0 = up, 1 = down,
  *  2 = left, 3 = right.
  * @property {delay} The delay between each movement of the enemy.
  * @property {frame} The current frame of the enemy's animation.
@@ -161,7 +163,7 @@ let light = function (x, y) {
  *   @param {this.y * height} The y coordinate of the top left corner of the enemy.
  *   @param {width} The width of the enemy.
  *   @param {height} The height of the enemy.
- * @property {checkEnemyCollision} A function that checks if the enemy 
+ * @property {checkEnemyCollision} A function that checks if the enemy
  *  is colliding with a wall.
  * @property {moveRandomly} A function that moves the enemy in a random direction.
  */
@@ -233,9 +235,9 @@ let enemy = function (x, y) {
  * This object represents the player. It has the following properties:
  *  @property {number} x - The x coordinate of the player.
  *  @property {number} y - The y coordinate of the player.
- *  @property {boolean} key - The key that the player has to collect 
+ *  @property {boolean} key - The key that the player has to collect
  *   to open the door to pass the level.
- *  @property {function} draw - This function draws the player 
+ *  @property {function} draw - This function draws the player
  *   by calling the ctx.drawImage() method. This method takes 9 arguments:
  *    1. The image to draw.
  *    2. The x coordinate of the upper left corner of the image.
@@ -246,15 +248,15 @@ let enemy = function (x, y) {
  *    7. The y coordinate of the upper left corner of the canvas.
  *    8. The width of the image in the canvas.
  *    9. The height of the image in the canvas.
- *  @property {function} controlMargins - This function controls the margins bounds 
+ *  @property {function} controlMargins - This function controls the margins bounds
  *   by setting a collision variable to true if the player is trying to go out of the map.
  *  @property {function} goUp - This function controls the player's movement to go up.
  *  @property {function} goDown - This function controls the player's movement to go down.
  *  @property {function} goLeft - This function controls the player's movement to go left.
  *  @property {function} goRight - This function controls the player's movement to go right.
- *  @property {function} checkKeyAndDoor - This function checks if the player has the key 
+ *  @property {function} checkKeyAndDoor - This function checks if the player has the key
  *   and if he/she can open the door.
- *  @property {function} checkCollisionWithEnemy - This function checks if the player 
+ *  @property {function} checkCollisionWithEnemy - This function checks if the player
  *   has collided with an enemy. In that case, the game is over.
  *  @property {function} win - This function checks if the player has won the game.
  *  @property {function} lose - This function checks if the player has lost the game.
@@ -373,18 +375,58 @@ let player = function () {
 	};
 	this.checkKeyAndDoor = () => {
 		let field = map[this.y][this.x];
-//! clg replaced by popup (Bootstrap)
 		if (field == 3) {
 			this.key = true;
 			map[this.y][this.x] = 2;
-			console.log("You found the key!");
+			if (canToastBeShown) {
+				Toastify({
+					text: "You found the key!",
+					duration: 3000,
+					close: false,
+					gravity: "bottom",
+					position: "center",
+					stopOnFocus: false,
+					style: {
+						background:
+							"linear-gradient(to right, #212529, #004e4e)",
+						border: "0.2rem solid #8d6900",
+						borderRadius: "0.375rem",
+					},
+				}).showToast();
+
+				canToastBeShown = false;
+
+				setTimeout(() => {
+					canToastBeShown = true;
+				}, 3000);
+			}
 		}
-//! clg replaced by popup (Bootstrap)
 		if (field == 1) {
 			if (this.key) {
 				this.win();
 			} else {
-				console.log("You need the key to open the door!");
+				if (canToastBeShown) {
+					Toastify({
+						text: "You need the key to open the door!",
+						duration: 3000,
+						close: false,
+						gravity: "bottom",
+						position: "center",
+						stopOnFocus: false,
+						style: {
+							background:
+								"linear-gradient(to right, #d37029, red)",
+							border: "0.2rem solid #8d6900",
+							borderRadius: "0.375rem",
+						},
+					}).showToast();
+
+					canToastBeShown = false;
+
+					setTimeout(() => {
+						canToastBeShown = true;
+					}, 3000);
+				}
 			}
 		}
 	};
@@ -400,7 +442,7 @@ let player = function () {
  * as part of an interval called in the init() function. However, only when the player has
  * moved for the first time, the countdown begins to be reduced.
  * Furthermore, the soundtrack of the game is played when the countdown is 30 seconds and
- * is paused when the countdown is 0 or simply when the player has not moved 
+ * is paused when the countdown is 0 or simply when the player has not moved
  * for the first time.
  * @returns It goes out of the function if the player has not moved for the first time.
  */
@@ -559,7 +601,7 @@ const main = () => {
 
 	for (let i = 0; i < enemies.length; i++) {
 		enemies[i].draw();
-		if(gameStarted){
+		if (gameStarted) {
 			enemies[i].moveRandomly();
 		}
 	}

@@ -1,5 +1,5 @@
 // This variable represents the initial value of the countdown.
-let countdown = 30;
+let countdown = 60;
 // This variable represents the interval of the countdown.
 let countdownInterval;
 // This variable represents if the player has moved or not.
@@ -48,6 +48,13 @@ let map = [
 	[0, 2, 2, 3, 0, 0, 2, 0, 0, 2, 2, 2, 2, 2, 0],
 	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
 ];
+let currentLevel = 1;
+
+const initGame = () => {
+    document.getElementById("intro-container").style.display = "none";
+    document.getElementById("game-container").style.display = "block";
+    init(); // Start the game
+};
 
 /**
  * Function called when the init() function is called. It basically transform the map array
@@ -341,14 +348,28 @@ let player = function () {
 		gameStartedForProtagonist = false;
 		resetEnemies();
 		resetCountdown();
-		Swal.fire({
-			title: "You won!",
-			text: "Do you want to continue?",
-			icon: "success",
-			confirmButtonText: "Go to the next level!",
-		}).then(() => {
-			restartLevel();
-		});
+		if(currentLevel === 3) {
+			Swal.fire({
+				title: "Congratulations!",
+				text: "You finished the game!!!",
+				icon: "success",
+				showCancelButton: false, 
+				showConfirmButton: false, 
+			}).then(() => {
+				loadNextLevel();
+				restartLevel();
+			});
+		}else{
+			Swal.fire({
+				title: "You won!",
+				text: "Do you want to continue?",
+				icon: "success",
+				confirmButtonText: "Go to the next level!",
+			}).then(() => {
+				loadNextLevel();
+				restartLevel();
+			});
+		}
 		this.x = 1;
 		this.y = 1;
 		map[8][3] = 3;
@@ -360,6 +381,9 @@ let player = function () {
 		gameStartedForProtagonist = false;
 		resetEnemies();
 		resetCountdown();
+    // Play game over music
+    document.getElementById("gameOverAudio").play();
+
 		Swal.fire({
 			title: "You lost!",
 			text: "Someone killed you!",
@@ -448,7 +472,13 @@ let player = function () {
  */
 const updateCountdown = () => {
 	if (!countdownStarted) {
+		if(currentLevel === 1) {
+		countdown = 61;
+		} else if(currentLevel === 2) {
+		countdown = 46;
+		}else if(currentLevel === 3) {
 		countdown = 31;
+		}
 	}
 
 	document.getElementById("countdownAudio").play();
@@ -468,7 +498,7 @@ const updateCountdown = () => {
 
 	document.getElementById("countdown").textContent = countdown + "s";
 
-	if (countdown === 30) {
+	if (countdown === 60 || countdown === 45 || countdown === 30) {
 		document.getElementById("countdownAudio").play();
 	}
 };
@@ -478,7 +508,13 @@ const updateCountdown = () => {
  */
 const resetCountdown = () => {
 	clearInterval(countdownInterval);
-	countdown = 31;
+	if(currentLevel === 1) {
+		countdown = 61;
+		} else if(currentLevel === 2) {
+		countdown = 46;
+		}else if(currentLevel === 3) {
+			countdown = 31;
+		}
 	document.getElementById("countdown").textContent = countdown + "s";
 };
 
@@ -489,9 +525,22 @@ const resetCountdown = () => {
  */
 const resetEnemies = () => {
 	enemies = [];
+	if(currentLevel === 1) {
 	enemies.push(new enemy(4, 4));
 	enemies.push(new enemy(13, 1));
 	enemies.push(new enemy(6, 8));
+	} else if(currentLevel === 2) {
+	enemies.push(new enemy(4, 4));
+	enemies.push(new enemy(13, 1));
+	enemies.push(new enemy(6, 8));
+	enemies.push(new enemy(6, 6));
+	} else if(currentLevel === 3) {
+	enemies.push(new enemy(4, 4));
+	enemies.push(new enemy(13, 1));
+	enemies.push(new enemy(6, 8));
+	enemies.push(new enemy(5, 6));
+	enemies.push(new enemy(9, 5));
+	}
 };
 
 /**
@@ -511,6 +560,12 @@ const restartLevel = () => {
 	countdownInterval = setInterval(updateCountdown, 1000);
 	protagonist = new player();
 
+	    // Stop game over music and reset it
+		const gameOverAudio = document.getElementById("gameOverAudio");
+		gameOverAudio.pause();
+		gameOverAudio.currentTime = 0;
+	
+
 	if (lights.length < 4) {
 		lights.push(new light(0, 0));
 		lights.push(new light(0, 9));
@@ -519,6 +574,9 @@ const restartLevel = () => {
 	}
 
 	resetEnemies();
+
+    document.getElementById("countdownAudio").play();
+
 	updateCountdown();
 };
 
@@ -583,6 +641,41 @@ const eraseCanvas = () => {
 	canvas.height = 500;
 };
 
+const loadNextLevel = () => {
+    currentLevel++;
+    // Load a different map, add more enemies, and reduce countdown as per the new level's requirements.
+	if(currentLevel === 2) {
+	map = [
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 2, 2, 0, 0, 0, 2, 2, 2, 2, 0, 0, 2, 2, 0],
+		[0, 0, 2, 2, 2, 2, 2, 0, 0, 2, 0, 0, 2, 0, 0],
+		[0, 2, 2, 0, 0, 0, 2, 2, 0, 2, 2, 2, 2, 0, 0],
+		[0, 2, 2, 2, 0, 0, 0, 2, 0, 0, 0, 2, 0, 0, 0],
+		[0, 2, 0, 2, 0, 0, 2, 2, 0, 2, 2, 2, 0, 0, 0],
+		[0, 2, 2, 0, 0, 0, 0, 2, 0, 0, 0, 2, 2, 2, 0],
+		[0, 2, 0, 2, 2, 2, 2, 0, 1, 0, 2, 0, 0, 2, 0],
+		[0, 2, 2, 2, 0, 0, 3, 0, 2, 2, 2, 2, 2, 2, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	];
+} else if(currentLevel === 3) {
+	map = [
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+		[0, 2, 2, 2, 0, 0, 2, 2, 2, 2, 0, 0, 2, 2, 0],
+		[0, 0, 0, 2, 2, 2, 2, 0, 0, 2, 0, 0, 2, 0, 0],
+		[0, 2, 2, 2, 0, 0, 0, 2, 0, 2, 2, 2, 2, 0, 0],
+		[0, 2, 0, 2, 2, 2, 0, 2, 0, 0, 0, 2, 0, 0, 0],
+		[0, 2, 0, 2, 0, 2, 2, 2, 0, 2, 2, 2, 0, 0, 0],
+		[0, 2, 2, 2, 2, 0, 2, 2, 2, 0, 0, 2, 2, 2, 0],
+		[0, 2, 0, 0, 2, 2, 0, 0, 0, 0, 1, 0, 0, 2, 0],
+		[0, 2, 2, 3, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 0],
+		[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+	];
+}
+	
+    // Update the level title.
+    document.querySelector("#level").textContent = "Level " + currentLevel;
+};
+
 /**
  * This function is called every 1 second interval when the init() function is called.
  * It performs the following actions:
@@ -614,3 +707,5 @@ const main = () => {
 		clearInterval(countdownInterval);
 	}
 };
+
+//TODO: FINAL SCREEN

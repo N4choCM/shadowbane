@@ -1,0 +1,17 @@
+.bg-primary-color{
+    background-color: #00a0a0 !important;
+}
+
+.custom-shadow{
+    box-shadow: rgba(255, 255, 255, 0.35) 0px 5px 15px;
+}
+
+.custom-img{
+    height: 100vh !important;
+    object-fit: cover !important;
+    width: 60vw !important;
+}
+
+.custom-card-bg{
+    background-color: #eef5ff !important;
+}
